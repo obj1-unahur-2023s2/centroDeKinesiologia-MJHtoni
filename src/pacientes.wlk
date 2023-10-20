@@ -1,31 +1,55 @@
-class Pacientes {
-	const edad
+class Paciente {
+	const property edad
 	var fortalezaMuscular
-	var dolor
-	const aparatos = []
+	var nivelDeDolor
+	const rutina = []
 	
-	method agregarAparato(unAparato) = aparatos.add(unAparato)
-	method usarAparato(unAparato) = unAparato.uso()
-}
-
-class Magneto inherits Pacientes{
-	method uso() {
-		dolor -= dolor*0.1
-	}
-}
-
-class Bicicleta inherits Pacientes{
-	method uso() {
-		if(edad > 8) {
-			dolor -= 4
-			fortalezaMuscular += 3
+	method nivelDeDolor() = nivelDeDolor
+	method puedeUsar(unAparato) = unAparato.puedeSerUsadoPor(self)
+	method fortalezaMuscular() = fortalezaMuscular
+	method usarAparato(unAparato) {
+		if(!self.puedeUsar(unAparato)) {
+			self.error("El paciente no puede usar el aparato")
 		}
+		unAparato.efectoDelUso(self)
+		fortalezaMuscular += unAparato.valorQueSumaFortaleza(self)
+		nivelDeDolor = 0.max(nivelDeDolor - unAparato.valorQueRestaDolor(self))
+	}
+	method asignarRutina(listaDeAparatos) {
+		rutina.addAll(listaDeAparatos)
+	}
+	method puedeRealizarRutina() = rutina.all({a => self.puedeUsar(a)})
+	method realizarRutina() {
+		if(!self.puedeRealizarRutina()) {
+			self.error("El paciente no puede hacer la rutina porque contiene aparatos que no puede usar")
+		}
+		rutina.forEach({a => self.usarAparato(a)})
 	}
 }
 
-class Minitramp inherits Pacientes {
-	method uso() {
-		if(dolor < 20)
-		fortalezaMuscular += fortalezaMuscular*0.1
+class Resistente inherits Paciente {
+	override method realizarRutina() {
+		super()
+		fortalezaMuscular+= rutina.size()
 	}
+}
+
+class Caprichoso inherits Paciente {
+	override method puedeRealizarRutina() = super()&& self.hayAparatoRojo()
+	method hayAparatoRojo() = rutina.any({a => a.color() == "Rojo"})
+	override method realizarRutina() {
+		super()
+		super()
+	}
+}
+
+class RapidaRecuperacion inherits Paciente {
+	override method realizarRutina() {
+		super()
+		nivelDeDolor = 0.max(nivelDeDolor - coeficienteDeRecuperacion.valor())
+	}
+}
+
+object coeficienteDeRecuperacion {
+	var property valor = 3
 }

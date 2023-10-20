@@ -1,0 +1,72 @@
+import pacientes.*
+import aparatos.*
+
+describe "test del código" {
+	const leonardo = new Paciente(edad=40,fortalezaMuscular=20,nivelDeDolor=10)
+	const milena = new Paciente(edad=3,fortalezaMuscular=50,nivelDeDolor=30)
+	const magneto1 = new Magneto()
+	const bicicleta1 = new Bicicleta()
+	const minitramp1 = new Minitramp()
+	
+	test "Leonardo puede usar el Magneto" {
+		assert.that(leonardo.puedeUsar(magneto1))
+	}
+	
+	test "Leonardo puede usar la Bicicleta" {
+		assert.that(leonardo.puedeUsar(bicicleta1))
+	}
+	
+	test "Leonardo puede usar el minitramp" {
+		assert.that(leonardo.puedeUsar(minitramp1))
+	}
+	
+	test "Milena puede usar el Magneto" {
+		assert.that(milena.puedeUsar(magneto1))
+	}
+	
+	test "Milena no puede usar la Bicicleta" {
+		assert.notThat(milena.puedeUsar(bicicleta1))
+	}
+	
+	test "Milena no puede usar el Minitramp" {
+		assert.notThat(milena.puedeUsar(minitramp1))
+	}
+
+	test "Después de usar el magneto una vez, el nivel de dolor de Leonardo baja a 9" {
+		leonardo.usarAparato(magneto1)
+		assert.equals(9,leonardo.nivelDeDolor())
+	}
+	test "Después de usar el magneto una vez, el nivel de dolor de Milena baja a 27" {
+		milena.usarAparato(magneto1)
+		assert.equals(27,milena.nivelDeDolor())
+	}
+}
+
+describe "test Etapa 2" {
+	const biciLeonardo = new Bicicleta()
+	const rutinaLeonardo = [biciLeonardo,new Minitramp(), biciLeonardo, new Magneto()]
+	const rutinaMilena = [new Magneto(),new Bicicleta()]
+	const leonardo = new Paciente(edad=40,fortalezaMuscular=20,nivelDeDolor=10)
+	const milena = new Paciente(edad=3,fortalezaMuscular=50,nivelDeDolor=30)
+	method initialize() {
+		leonardo.asignarRutina(rutinaLeonardo)
+		milena.asignarRutina(rutinaMilena)
+	}
+	test "Leonardo puede realizar la rutina asignada" {
+		assert.that(leonardo.puedeRealizarRutina())
+	}
+	test "Leonardo hace la rutina y su nivel de dolor baja a 1.8" {
+		leonardo.realizarRutina()
+		assert.equals(1.8,leonardo.nivelDeDolor())
+	}
+	test "Leonardo hace la rutina y su fortaleza sube a 30" {
+		leonardo.realizarRutina()
+		assert.equals(30,leonardo.fortalezaMuscular())
+	}
+	test "Milena no puede realizar la rutina, arroja excepción" {
+		assert.throwsException(milena.realizarRutina())
+	}
+	test "Milena no puede realizar la rutina" {
+		assert.notThat(milena.puedeRealizarRutina())
+	}
+}
